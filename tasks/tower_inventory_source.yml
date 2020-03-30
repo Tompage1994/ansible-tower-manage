@@ -1,0 +1,26 @@
+---
+
+# Create Inventoy Source
+- name: Add tower inventory source
+  tower_inventory_source:
+    name: "{{ item.1.name }}"
+    description: "{{ item.1.description | default(omit) }}"
+    inventory: "{{ item.1.inventory }}"
+    credential: "{{ item.1.credential | default(omit) }}"
+    source: "{{ item.1.source }}"
+    update_on_launch: "{{ item.1.update_on_launch | default(omit) }}"
+    update_on_project_update: "{{ item.1.update_on_project_update | default(item.1.source=='scm' | ternary(true, omit)) }}"
+    overwrite: "{{ item.1.overwrite | default(omit) }}"
+    overwrite_vars: "{{ item.1.overwrite_vars | default(omit) }}"
+    instance_filters: "{{ item.1.instance_filters | default(omit) }}"
+    source_project: "{{ item.1.source_project | default(omit) }}"
+    source_path: "{{ item.1.source_path | default(omit) }}"
+    source_regions: "{{ item.1.source_regions | default(omit) }}"
+    source_vars: "{{ item.1.source_vars | default(omit) }}"
+    state: "{{ tower_manage_proj_state | default('present') }}"
+    tower_host: "{{ tower_manage_server }}"
+    tower_username: "{{ tower_manage_admin_username }}"
+    tower_password: "{{ tower_manage_admin_password }}"
+    validate_certs: "{{ tower_manage_validate_certs }}"
+  loop: "{{ tower_objects.organisations | subelements('inventory_source', 'skip_missing=True') }}"
+...

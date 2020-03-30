@@ -1,0 +1,28 @@
+---
+
+# Create Group
+- name: "Create Host"
+  tower_host:
+    name: "{{ item.1.name }}"
+    description: "{{ item.1.description | default(omit) }}"
+    inventory: "{{ item.1.inventory }}"
+    variables: "{{ item.1.variables | default(omit) }}"
+    state: "{{ tower_manage_proj_state | default('present') }}"
+    tower_host: "{{ tower_manage_server }}"
+    tower_username: "{{ tower_manage_admin_username }}"
+    tower_password: "{{ tower_manage_admin_password }}"
+    validate_certs: "{{ tower_manage_validate_certs }}"
+  loop: "{{ tower_objects.organisations | subelements('host', 'skip_missing=True') }}"
+
+- name: "Associate host to group"
+  command: >-
+            tower-cli host associate
+            --host '{{ item.1.name }}'
+            --group '{{ item.1.group }}'
+            --tower-host {{ tower_manage_server }}
+            --tower-username {{ tower_manage_admin_username }}
+            --tower-password {{ tower_manage_admin_password }} {{ tower_manage_validate_certs | ternary(omit, '--insecure', omit) }}
+  loop: "{{ tower_objects.organisations | subelements('host', 'skip_missing=True') }}"
+  register: job_template_mod
+  changed_when: job_template_mod.stdout_lines.0 == "Resource changed."
+...

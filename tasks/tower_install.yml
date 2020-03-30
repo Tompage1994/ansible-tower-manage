@@ -1,0 +1,63 @@
+---
+
+# Install Base OS Packages
+- name: "Install Base Packages for Tower CLI"
+  yum:
+    name: "{{ tower_manage_base_packages }}"
+    state: present
+  when: ansible_facts['distribution'] == "CentOS"
+
+# Same, but on RHEL RHSCL is enabled by Tower, so disable
+- name: "Install Base Packages for Tower CLI"
+  yum:
+    name: "{{ tower_manage_base_packages }}"
+    state: present
+    disablerepo: "{{ item }}"
+  loop: "{{ tower_manage_disablerepo }}"
+  when: ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version']|int >= 7
+
+# Download and Extract
+- name: "[Tower] Download and Extract Tower"
+  unarchive:
+    src: "{{ tower_manage_tower_releases_url }}/{{ tower_manage_tower_setup_file }}"
+    dest: "{{ tower_manage_working_location }}"
+    remote_src: true
+    exclude: "inventory"
+  register: tower_download_extract
+
+# Create Inventory
+- name: "[Tower] Populate Tower Setup Inventory from Template"
+  template:
+    src: inventory.j2
+    dest: "{{ tower_manage_working_location }}/ansible-tower-setup-{{ tower_manage_tower_release_version }}/inventory"
+
+# Create Inventory
+- name: "[Tower] Add Install Vars file"
+  template:
+    src: install_vars.j2
+    dest: "{{ tower_manage_working_location }}/ansible-tower-setup-{{ tower_manage_tower_release_version }}/install_vars.yml"
+
+# Run the Setup
+- name: "[Tower] Run the Ansible Tower Setup Program"
+  command: ./setup.sh -e "@install_vars.yml"
+  args:
+    chdir: "{{ tower_manage_working_location }}/ansible-tower-setup-{{ tower_manage_tower_release_version }}"
+  async: 10000
+  poll: 20
+  changed_when: false   # these will always run and will always report “changed” otherwise
+
+# Pregnant Pause
+- name: "Pregnant Pause... for 30 seconds"
+  pause:
+    seconds: 30
+
+- name: Check if ansible tower is running.
+  uri:
+    url: "{{ tower_manage_server }}"
+    status_code: 200
+    validate_certs: "{{ tower_manage_validate_certs }}"
+  register: result
+  until: result.status == 200
+  retries: 90
+  delay: 10
+...

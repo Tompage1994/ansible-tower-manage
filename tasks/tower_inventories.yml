@@ -1,0 +1,16 @@
+---
+
+# Create Inventories
+- name: " Create Inventories"
+  tower_inventory:
+    name: "{{ item.1.name }}"
+    description: "{{ item.1.description }}"
+    organization: "{{ item.0.name }}"
+    state: "{{ tower_manage_proj_state | default('present') }}"
+    tower_host: "{{ tower_manage_server }}"
+    tower_username: "{{ tower_manage_admin_username }}"
+    tower_password: "{{ tower_manage_admin_password }}"
+    validate_certs: "{{ tower_manage_validate_certs }}"
+    variables: "{{ item.1.variables | default(omit) }}"
+  loop: "{{ tower_objects.organisations | subelements('inventories', 'skip_missing=True') }}"
+...

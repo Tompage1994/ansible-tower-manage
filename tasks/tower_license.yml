@@ -1,0 +1,16 @@
+---
+
+# Apply the Tower License
+- name: "[Tower] Upload Tower License File"
+  uri:
+    url: "{{ tower_manage_server }}/api/v2/config/"
+    validate_certs: false
+    method: POST
+    force_basic_auth: true
+    user: "{{ tower_manage_admin_username }}"
+    password: "{{ tower_manage_admin_password }}"
+    body: "{{ tower_manage_licence }}"
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+...

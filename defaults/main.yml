@@ -1,0 +1,62 @@
+---
+
+# defaults file for ansible-tower-manage
+
+############################################################
+#               Tower Installation Vars                    #
+############################################################
+
+# Base Packages
+tower_manage_base_packages:
+    - ansible-tower-cli
+    - python33-python-devel
+    - gcc
+    - python3-devel
+
+tower_manage_disablerepo:
+    - "rhel-server-rhscl-7-rpms"
+
+# Working location for installation files
+tower_manage_working_location: "/root/"
+
+# Ansible Group name for tower systems
+tower_manage_platform_group_name: "tower"
+
+# Default Admin Username
+tower_manage_admin_username: admin
+
+# Default Password used for tower deployment
+tower_manage_admin_password: "password"
+tower_manage_pg_password: "password"
+tower_manage_rabbitmq_password: "password"
+
+# Tower Installer
+tower_manage_tower_release_version: 3.6.3-1
+tower_manage_tower_releases_url: https://releases.ansible.com/ansible-tower/setup/
+tower_manage_tower_setup_file: ansible-tower-setup-{{ tower_manage_tower_release_version }}.tar.gz
+
+tower_manage_proj_branch: master
+
+# Var to define whether to create a schedule. tower-dev is set to false so no schedule is created
+tower_manage_create_schedule: true
+
+############################################################
+#               Ansible  initial settings.                 #
+############################################################
+
+tower_server: https://localhost
+tower_validate_certs: false
+tower_proj_state: present
+
+# VirtualEnv
+
+tower_manage_tower_default_virtualenv_path: /var/lib/awx/venv
+tower_manage_tower_custom_virtualenv_path: /opt/ansible_custom_venv
+
+# VirtualEnv name to be created with the pip packages to be installed
+
+tower_manage_tower_custom_virtualenv_path_per_team_jobs: []
+
+tower_objects: []
+
+...

@@ -1,0 +1,15 @@
+---
+# Create a team
+- name: " Create a team"
+  tower_team:
+    name: "{{ item.1.name }}"
+    description: "{{ item.1.description | default(omit) }}"
+    organization: "{{ item.0.name }}"
+    state: "{{ tower_manage_proj_state | default('present') }}"
+    tower_host: "{{ tower_manage_server }}"
+    tower_username: "{{ tower_manage_admin_username }}"
+    tower_password: "{{ tower_manage_admin_password }}"
+    validate_certs: "{{ tower_manage_validate_certs }}"
+  loop: "{{ tower_objects.organisations | subelements('team', 'skip_missing=True') }}"
+
+...

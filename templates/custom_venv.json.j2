@@ -1,0 +1,11 @@
+{% if tower_manage_tower_custom_virtualenv_path_per_team_jobs is defined %}
+{
+    "CUSTOM_VENV_PATHS": [
+{% for key in tower_manage_tower_custom_virtualenv_path_per_team_jobs.keys() %}
+        "{{tower_manage_tower_custom_virtualenv_path}}/{{ key }}",
+{% endfor %}
+
+    ]
+}
+{% endif %}
+

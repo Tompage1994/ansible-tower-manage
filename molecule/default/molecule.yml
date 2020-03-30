@@ -1,0 +1,39 @@
+---
+dependency:
+  options:
+    ignore-certs: True
+    ignore-errors: True
+    role-file: requirements.yml
+driver:
+  name: docker
+lint:
+  name: yamllint
+  options:
+    config-file: molecule/yaml-lint.yml
+platforms:
+  - name: instance
+    image: centos:7
+    # The rest of this platforms section is required to run systemd
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+  playbooks:
+    converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
+
+scenario:
+  name: default
+  test_sequence:
+    - dependency
+    - lint
+    - syntax

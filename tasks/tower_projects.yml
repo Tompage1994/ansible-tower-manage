@@ -1,0 +1,32 @@
+---
+
+# Create Projects
+- name: "Add Tower Project with cache timeout and custom virtualenv  "
+  tower_project:
+    name: "{{ item.1.name }}"
+    description: "{{ item.1.description | default(omit) }}"
+    organization: "{{ item.0.name }}"
+    scm_url: "{{ item.1.scm_url }}"
+    scm_type: "{{ item.1.scm_type }}"
+    scm_update_on_launch: "{{ item.1.scm_update_on_launch | default(omit) }}"
+    scm_update_cache_timeout: 60
+    scm_credential: "{{ item.1.scm_credential }}"
+    scm_branch: "{{ item.1.scm_branch | default(tower_manage_proj_branch) }}"
+    state: "{{ tower_manage_proj_state | default('present') }}"
+    tower_host: "{{ tower_manage_server }}"
+    tower_username: "{{ tower_manage_admin_username }}"
+    tower_password: "{{ tower_manage_admin_password }}"
+    validate_certs: "{{ tower_manage_validate_certs }}"
+    custom_virtualenv: "{{ item.1.custom_virtualenv | default(omit) }}"
+  loop: "{{ tower_objects.organisations | subelements('projects' , 'skip_missing=True')  }}"
+
+- name: "Update Project"
+  command: >-
+    tower-cli project update --name {{ item.1.name }}
+    --tower-host {{ tower_manage_server }}
+    --tower-username {{ tower_manage_admin_username }}
+    --tower-password {{ tower_manage_admin_password }} {{ tower_manage_validate_certs | ternary(omit, '--insecure', omit) }}
+  register: result
+  changed_when: '"(changed: true)" in result.stdout'
+  loop: "{{ tower_objects.organisations | subelements('projects' , 'skip_missing=True')  }}"
+...

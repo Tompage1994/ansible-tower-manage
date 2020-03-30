@@ -1,0 +1,16 @@
+---
+
+# Create Group
+- name: " Create Group"
+  tower_group:
+    name: "{{ item.1.name }}"
+    description: "{{ item.1.description | default(omit) }}"
+    inventory: "{{ item.1.inventory }}"
+    variables: "{{ item.1.variables | default(omit) }}"
+    state: "{{ tower_manage_proj_state | default('present') }}"
+    tower_host: "{{ tower_manage_server }}"
+    tower_username: "{{ tower_manage_admin_username }}"
+    tower_password: "{{ tower_manage_admin_password }}"
+    validate_certs: "{{ tower_manage_validate_certs }}"
+  loop: "{{ tower_objects.organisations | subelements('group', 'skip_missing=True') }}"
+...

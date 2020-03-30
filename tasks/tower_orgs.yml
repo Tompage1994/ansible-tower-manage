@@ -1,0 +1,14 @@
+---
+
+# Create Orgs
+- name: " Create Organisations"
+  tower_organization:
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    state: present
+    tower_host: "{{ tower_manage_server }}"
+    tower_username: "{{ tower_manage_admin_username }}"
+    tower_password: "{{ tower_manage_admin_password }}"
+    validate_certs: "{{ tower_manage_validate_certs }}"
+  loop: "{{ tower_objects.organisations }}"
+...

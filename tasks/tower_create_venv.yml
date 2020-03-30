@@ -1,0 +1,48 @@
+---
+
+# Create  VirtualEnv FilePath
+- name: " Create VirtualEnv Path"
+  file:
+    path: "{{ tower_manage_tower_custom_virtualenv_path }}"
+    state: directory
+    mode: '0755'
+
+- name: " Create VirtualEnv Path per jobs or teams "
+  file:
+    path: "{{ tower_manage_tower_custom_virtualenv_path }}/{{ item.key }}"
+    state: directory
+    mode: '0755'
+  loop: "{{ tower_manage_tower_custom_virtualenv_path_per_team_jobs |dict2items }}"
+
+- name: " Upgrade pip"
+  pip:
+    name: pip==19.3.1
+    virtualenv: "{{ tower_manage_tower_default_virtualenv_path }}/{{ item.key }}"
+    virtualenv_command: "{{ item.value.venv_cmd }}"
+    extra_args: --upgrade
+  loop: "{{ tower_manage_tower_custom_virtualenv_path_per_team_jobs |dict2items }}"
+
+# Install Python pip Packages into VirtualEnv
+- name: " Install PIP Packages per custom_virtualenv_path jobs or teams "
+  pip:
+    name: "{{ item.value.packages }}"
+    virtualenv: "{{ tower_manage_tower_default_virtualenv_path }}/{{ item.key }}"
+    virtualenv_command: "{{ item.value.venv_cmd }}"
+  loop: "{{ tower_manage_tower_custom_virtualenv_path_per_team_jobs |dict2items }}"
+  register: created_VirtualEnv
+
+# Apply VirtualEnv custom location
+- name: "[Tower] venvs spanned over multiple directories"
+  uri:
+    url: https://localhost/api/v2/settings/system/
+    validate_certs: false
+    method: PATCH
+    force_basic_auth: true
+    user: "{{ tower_manage_admin_username }}"
+    password: "{{ tower_manage_admin_password }}"
+    body: "{{ lookup('template','custom_venv.json.j2') }}"
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+  when: created_VirtualEnv is succeeded
+...

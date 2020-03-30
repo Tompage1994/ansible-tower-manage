@@ -1,0 +1,22 @@
+---
+galaxy_info:
+  role_name: ansible-tower-manage
+  author: Tom Page
+  description: Role to manage Ansible Tower
+  company:
+
+  license: license (MIT)
+
+  min_ansible_version: 2.7
+
+  platforms:
+    - name: EL
+      versions:
+        - 7
+
+  galaxy_tags:
+    - linux
+    - system
+    - ansible
+
+dependencies: []
