@@ -132,13 +132,37 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
 
 ```
 ---
-# Playbook to install Ansible Tower
+# Playbook to install Ansible Tower as a single node
 
 - name: Setup Ansible Tower
   hosts: awx
   become: true
   vars:
-    tower_manage_tower_release_version: bundle-3.6.3-1.el7.tar.gz
+    tower_manage_tower_releases_url: https://releases.ansible.com/ansible-tower/setup-bundle
+    tower_manage_tower_release_version: bundle-3.6.3-1.tar.gz
+  tasks:
+    - include_role:
+        name: ansible-deploy-awx
+        tasks_from: "{{awx_tasks}}.yml"
+      loop:      # Include  specific task file
+        - tower_install
+        - tower_license
+      loop_control:
+        loop_var: awx_tasks
+```
+
+```
+---
+# Playbook to install Ansible Tower as a cluster
+
+- name: Setup Ansible Tower
+  hosts: awx
+  become: true
+  vars:
+    tower_hosts:
+      - "clusternode[1:3].example.com"
+    tower_database: "dbnode.example.com"
+    tower_database_port: "5432"
   tasks:
     - include_role:
         name: ansible-deploy-awx

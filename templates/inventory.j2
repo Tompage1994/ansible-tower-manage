@@ -1,20 +1,17 @@
 [tower]
-localhost ansible_connection=local
+{% for item in tower_hosts %}
+  {{ item }}
+{% endfor %}
 
 [database]
+{{ tower_database }}
 
 [all:vars]
 admin_password='{{ tower_manage_admin_password }}'
 
-# HACK: Override RAM req
-# (AWS 4GB nodes actually have 3.75GB so pre-flight fails)
-#required_ram=2048
-# (Molecule testing with Docker, so am setting to 1GB
-required_ram=1024
-
 # Define Remote PostgreSQL for Tower
-pg_host=''
-pg_port=''
+pg_host='{{ tower_database }}'
+pg_port='{{ tower_database_port }}'
 
 pg_database='awx'
 pg_username='awx'
@@ -27,11 +24,3 @@ rabbitmq_cookie=cookiemonster
 # Isolated Tower nodes automatically generate an RSA key for authentication;
 # To disable this behavior, set this value to false
 # isolated_key_generation=true
-
-#[isolated_group_aws]
-
-#[isolated_group_aws:vars]
-#controller=tower
-#ansible_user=ec2-user
-#ansible_ssh_private_key_file=~/.ssh/
-#ansible_become=true

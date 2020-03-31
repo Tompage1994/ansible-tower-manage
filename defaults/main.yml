@@ -31,8 +31,8 @@ tower_manage_pg_password: "password"
 tower_manage_rabbitmq_password: "password"
 
 # Tower Installer
-tower_manage_tower_release_version: 3.6.3-1
-tower_manage_tower_releases_url: https://releases.ansible.com/ansible-tower/setup/
+tower_manage_tower_release_version: latest
+tower_manage_tower_releases_url: https://releases.ansible.com/ansible-tower/setup
 tower_manage_tower_setup_file: ansible-tower-setup-{{ tower_manage_tower_release_version }}.tar.gz
 
 tower_manage_proj_branch: master
@@ -43,6 +43,12 @@ tower_manage_create_schedule: true
 ############################################################
 #               Ansible  initial settings.                 #
 ############################################################
+
+tower_hosts:
+  - "localhost ansible_connection=local"
+
+tower_database: ""
+tower_database_port: ""
 
 tower_server: https://localhost
 tower_validate_certs: false
