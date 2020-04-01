@@ -31,4 +31,4 @@
     acme_directory: https://acme-v02.api.letsencrypt.org/directory
     acme_version: 2
     terms_agreed: true
-    data: acme_cert
+    data: "{{ acme_cert }}"
