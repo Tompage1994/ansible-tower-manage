@@ -11,11 +11,6 @@
   tags:
     - tower-install
 
-- include: tower_certs.yml
-  tags:
-    - tower-certs
-  when: tower_manage_install_certs
-
 #
 # -----------------------------------------------------------------------------
 # License Tasks
