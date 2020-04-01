@@ -30,11 +30,12 @@
     private_key_src: /etc/tower/tower.key
   register: acme_cert_challenge
 
+- name: Install challenge certificates
   ...:
     domain: "{{ item.domain }}"
     challenge_certificate: "{{ item.challenge_certificate }}"
     regular_certificate: "{{ item.regular_certificate }}"
-    private_key: /etc/pki/cert/key/sample.com.key
+    private_key: /etc/tower/tower.key
   loop: "{{ acme_cert_challenge.results }}"
 
 - name: Verify a Let's Encrypt Certificate
