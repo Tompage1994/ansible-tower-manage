@@ -31,7 +31,6 @@ tower_manage_pg_password: "password"
 tower_manage_rabbitmq_password: "password"
 
 # Tower Installer
-tower_manage_tower_release_version: latest
 tower_manage_tower_releases_url: https://releases.ansible.com/ansible-tower/setup
 tower_manage_tower_setup_file: ansible-tower-setup-{{ tower_manage_tower_release_version }}.tar.gz
 

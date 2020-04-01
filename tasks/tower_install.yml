@@ -1,4 +1,10 @@
 ---
+# Assert tower version specified
+- name: "Assert tower version specified"
+  assert:
+    that:
+      - tower_manage_tower_release_version is defined
+    fail_msg: "tower_manage_tower_release_version must be defined"
 
 # Install Base OS Packages
 - name: "Install Base Packages for Tower CLI"
