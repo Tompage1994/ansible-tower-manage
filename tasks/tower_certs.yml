@@ -1,18 +1,31 @@
 ---
+
 - name: Generate an OpenSSL private key.
   openssl_privatekey:
-    path: /etc/tower/tower.key
+    path: tower.key
+  delegate_to: localhost
 
 - name: Generate an OpenSSL CSR.
   openssl_csr:
-    path: /etc/tower/tower.csr
-    privatekey_path: /etc/tower/tower.key
+    path: tower.csr
+    privatekey_path: tower.key
     common_name: "{{ tower_manage_fqdn }}"
+  delegate_to: localhost
+
 
 - name: Generate a Let's Encrypt Certificate
   openssl_certificate:
-    path: /etc/tower/tower.cert
-    csr_path: /etc/tower/tower.csr
+    path: tower.cert
+    csr_path: tower.csr
+    privatekey_path: tower.key
     provider: acme
-    acme_accountkey_path: /etc/tower/tower.key
-    acme_challenge_path: /etc/tower/challenges/ansible.com/
+  delegate_to: localhost
+
+- name:
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/tower/{{ item }}"
+  with_items:
+    - tower.cert
+    - tower.csr
+    - tower.key
