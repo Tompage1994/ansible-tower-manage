@@ -19,7 +19,7 @@
     dest: /etc/tower/tower.cert
     acme_directory: https://acme-v02.api.letsencrypt.org/directory
     acme_version: 2
-    terms_agreed: true"
+    terms_agreed: true
   register: acme_cert
   notify: "restart nginx"
 
@@ -30,5 +30,5 @@
     dest: /etc/tower/tower.cert
     acme_directory: https://acme-v02.api.letsencrypt.org/directory
     acme_version: 2
-    terms_agreed: true"
+    terms_agreed: true
     data: acme_cert
