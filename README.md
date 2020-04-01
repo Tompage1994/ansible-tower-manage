@@ -30,6 +30,9 @@ Role Variables
 Available variables are listed below, along with default values defined (see defaults/main.yml)
 
 ```
+    # Create a lets encrypt cert rather to replace the standard self signed cert
+    tower_manage_install_certs: false
+
     # Working location for installation files
     tower_manage_working_location: "/root/"
 

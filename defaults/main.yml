@@ -39,6 +39,8 @@ tower_manage_proj_branch: master
 # Var to define whether to create a schedule. tower-dev is set to false so no schedule is created
 tower_manage_create_schedule: true
 
+tower_manage_install_certs: false
+
 ############################################################
 #               Ansible  initial settings.                 #
 ############################################################

@@ -61,7 +61,7 @@
   uri:
     url: "{{ tower_manage_server }}"
     status_code: 200
-    validate_certs: "{{ tower_manage_validate_certs }}"
+    validate_certs: false
   register: result
   until: result.status == 200
   retries: 90
