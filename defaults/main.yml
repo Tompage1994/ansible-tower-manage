@@ -52,6 +52,7 @@ tower_database: ""
 tower_database_port: ""
 
 tower_manage_server: https://localhost
+tower_manage_fqdn: localhost
 tower_manage_validate_certs: true
 tower_proj_state: present
 

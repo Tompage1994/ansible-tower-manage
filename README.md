@@ -77,6 +77,7 @@ Available variables are listed below, along with default values (see defaults/ma
 ```
 # URL of the Tower API instance/host
 tower_manage_server: https://localhost
+tower_manage_fqdn: localhost
 
 # Should certs be validated? Set false if using self-signed certs
 tower_managevalidate_certs: true
