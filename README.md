@@ -80,7 +80,7 @@ tower_manage_server: https://localhost
 tower_manage_fqdn: localhost
 
 # Should certs be validated? Set false if using self-signed certs
-tower_managevalidate_certs: true
+tower_manage_validate_certs: true
 
 # Dictionary of Tower Objects to seed
 tower_objects:
