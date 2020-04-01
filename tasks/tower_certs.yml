@@ -12,20 +12,23 @@
     common_name: "{{ tower_manage_fqdn }}"
   delegate_to: localhost
 
-
 - name: Generate a Let's Encrypt Certificate
-  openssl_certificate:
-    path: tower.cert
-    csr_path: tower.csr
-    privatekey_path: tower.key
-    provider: acme
-  delegate_to: localhost
+  acme_certificate:
+    account_key_src: /etc/tower/tower.key
+    csr: /etc/tower/tower.csr
+    dest: /etc/tower/tower.cert
+    acme_directory: https://acme-v02.api.letsencrypt.org/directory
+    acme_version: 2
+    terms_agreed: true"
+  register: acme_cert
+  notify: "restart nginx"
 
-- name:
-  copy:
-    src: "{{ item }}"
-    dest: "/etc/tower/{{ item }}"
-  with_items:
-    - tower.cert
-    - tower.csr
-    - tower.key
+- name: Verify a Let's Encrypt Certificate
+  acme_certificate:
+    account_key_src: /etc/tower/tower.key
+    csr: /etc/tower/tower.csr
+    dest: /etc/tower/tower.cert
+    acme_directory: https://acme-v02.api.letsencrypt.org/directory
+    acme_version: 2
+    terms_agreed: true"
+    data: acme_cert
