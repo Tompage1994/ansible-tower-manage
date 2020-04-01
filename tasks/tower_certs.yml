@@ -7,7 +7,7 @@
   openssl_csr:
     path: /etc/tower/tower.csr
     privatekey_path: /etc/tower/tower.key
-    common_name: "{{ tower_manage_server }}"
+    common_name: "{{ tower_fqdn }}"
 
 - name: Generate a Let's Encrypt Certificate
   openssl_certificate:
