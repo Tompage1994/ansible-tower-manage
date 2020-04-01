@@ -1,4 +1,14 @@
 ---
+- name: Generate an OpenSSL private key.
+  openssl_privatekey:
+    path: /etc/tower/tower.key
+
+- name: Generate an OpenSSL CSR.
+  openssl_csr:
+    path: /etc/tower/tower.csr
+    privatekey_path: /etc/tower/tower.key
+    common_name: "{{ tower_server }}"
+
 - name: Generate a Let's Encrypt Certificate
   openssl_certificate:
     path: /etc/tower/tower.cert
