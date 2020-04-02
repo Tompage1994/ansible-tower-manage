@@ -26,7 +26,7 @@
     --tower-host {{ tower_manage_server }}
     --tower-username {{ tower_manage_admin_username }}
     --tower-password {{ tower_manage_admin_password }}
-    {{ tower_manage_validate_certs | ternary(omit, '--insecure') }}
+    --insecure
   register: result
   changed_when: '"(changed: true)" in result.stdout'
   loop: "{{ tower_objects.organisations | subelements('projects' , 'skip_missing=True')  }}"
