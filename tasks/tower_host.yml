@@ -21,7 +21,7 @@
             --group '{{ item.1.group }}'
             --tower-host {{ tower_manage_server }}
             --tower-username {{ tower_manage_admin_username }}
-            --tower-password {{ tower_manage_admin_password }} {{ tower_manage_validate_certs | ternary(omit, '--insecure', omit) }}
+            --tower-password {{ tower_manage_admin_password }} --insecure
   loop: "{{ tower_objects.organisations | subelements('host', 'skip_missing=True') }}"
   register: job_template_mod
   changed_when: job_template_mod.stdout_lines.0 == "Resource changed."

@@ -34,7 +34,7 @@
             --playbook '{{ item.1.playbook }}'
             --tower-host {{ tower_manage_server }}
             --tower-username {{ tower_manage_admin_username }}
-            --tower-password {{ tower_manage_admin_password }} {{ tower_manage_validate_certs | ternary(omit, '--insecure', omit) }}
+            --tower-password {{ tower_manage_admin_password }} --insecure
   loop: "{{ tower_objects.organisations | subelements('job_templates', 'skip_missing=True') }}"
   register: job_template_mod
   when: item.1.custom_virtualenv is defined
@@ -49,7 +49,7 @@
                      RRULE:FREQ={{ item.1.schedule.frequency | upper }};INTERVAL={{ item.1.schedule.interval | default('1') }}"
             --tower-host {{ tower_manage_server }}
             --tower-username {{ tower_manage_admin_username }}
-            --tower-password {{ tower_manage_admin_password }} {{ tower_manage_validate_certs | ternary(omit, '--insecure', omit) }}
+            --tower-password {{ tower_manage_admin_password }} --insecure
   loop: "{{ tower_objects.organisations | subelements('job_templates', 'skip_missing=True') }}"
   register: job_template_schedule
   when: item.1.schedule is defined
@@ -65,7 +65,7 @@
                      RRULE:FREQ={{ item.1.schedule.frequency | upper }};INTERVAL={{ item.1.schedule.interval | default('1') }}"
             --tower-host {{ tower_manage_server }}
             --tower-username {{ tower_manage_admin_username }}
-            --tower-password {{ tower_manage_admin_password }} {{ tower_manage_validate_certs | ternary(omit, '--insecure', omit) }}
+            --tower-password {{ tower_manage_admin_password }} --insecure
   loop: "{{ tower_objects.organisations | subelements('job_templates', 'skip_missing=True') }}"
   register: job_template_schedule_new
   when: item.1.schedule is defined && tower_manage_create_schedule
