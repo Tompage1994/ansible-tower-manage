@@ -10,7 +10,7 @@
     scm_type: "{{ item.1.scm_type }}"
     scm_update_on_launch: "{{ item.1.scm_update_on_launch | default(omit) }}"
     scm_update_cache_timeout: 60
-    scm_credential: "{{ item.1.scm_credential }}"
+    scm_credential: "{{ item.1.scm_credential | default(omit) }}"
     scm_branch: "{{ item.1.scm_branch | default(tower_manage_proj_branch) }}"
     state: "{{ tower_manage_proj_state | default('present') }}"
     tower_host: "{{ tower_manage_server }}"
