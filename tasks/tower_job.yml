@@ -68,7 +68,7 @@
             --tower-password {{ tower_manage_admin_password }} --insecure
   loop: "{{ tower_objects.organisations | subelements('job_templates', 'skip_missing=True') }}"
   register: job_template_schedule_new
-  when: item.1.schedule is defined && tower_manage_create_schedule
+  when: (item.1.schedule is defined) and tower_manage_create_schedule
   ignore_errors: true
   changed_when: job_template_schedule_new.stdout_lines.0 == "Resource changed."
 ...
