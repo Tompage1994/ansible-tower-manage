@@ -46,7 +46,7 @@ tower_manage_install_certs: false
 ############################################################
 
 tower_hosts:
-  - "localhost ansible_connection=local"
+    - "localhost ansible_connection=local"
 
 tower_database: ""
 tower_database_port: ""
