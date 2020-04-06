@@ -1,26 +1,21 @@
-Role Name
+ansible-tower-manage
 =========
 
-Ansible role to install Ansible Tower and Seed Ansible Tower with some simple initial settings
+Ansible role to install and manage the configuration of Ansible Tower. It includes the ability to add configuration objects such as projects, job tempaltes, credentials, inventories and many more.
 
 Requirements
 ------------
+
+Users can seed Tower objects by passing a variable `tower_objects` that contains a dictionary of objects. This readme contains an example set of high level objects that can be used as a guide. Each object has a distinct set of variables that it can consume, based upon the appropriate Ansible module employed. For example, the `organisation` object can take `name` and `description` as valid variables. Most objects has been documented within the example `tower_objects`, use it as a guide for your seeding activities.
+
+The role heavily utilises the existing `tower_*` Ansible modules, which in turn leverage the `tower-cli`.
+
+The role can install all pre-requisites on the target (eg `python-virtualenv` and `python-setuptools`) as well as install tower-cli inside a venv in order to complete the above tasks, but it does require access to the appropriate RHEL/CentOS channels and access to PyPi.
 
 A valid `license.json` file needs to be supplied using variable `tower_manage_licence` so that it can be uploaded to Tower once installed.
 ```yaml
 tower_manage_licence: "{{ lookup('file','license.json') }}"
 ```
-
-NOTE: Currently Organisations, Projects, Inventories and Job Templates are seeded, but the role can be easily expanded to handle all Tower objects.
-
-Users can seed Tower objects by passing a variable `tower_objects` that contains a dictionary of objects. The standard `default/main.yml` file, contains an example set of high level objects that can be used as a guide. Each object has a distinct set of variables that it can consume, based upon the appropriate Ansible module employed. For example, the `organisation` object can take `name` and `description` as valid variables. Each object has been documented within the example `tower_objects`, use it as a guide for your seeding activities.
-
-An example VARS file has been included to demostrate how to provide the objects.
-
-The role heavily utilises the existing `tower_*` Ansible modules, which in turn leverage the `tower-cli`. This role installs `tower-cli` using the `pip` ansible module, into a Python Virtualenv on the target virtuaalenv paths .
-
-The role installs all pre-requisites on the target (eg `python-virtualenv` and `python-setuptools`) to complete the above tasks, but it does require access to the appropriate RHEL/CentOS channels and access to PyPi.
-
 
 There are no other strict Role dependencies.
 
@@ -29,7 +24,7 @@ Role Variables
 
 Available variables are listed below, along with default values defined (see defaults/main.yml)
 
-```
+```yaml
     # Create a lets encrypt cert rather to replace the standard self signed cert
     tower_manage_install_certs: false
 
@@ -45,7 +40,7 @@ Available variables are listed below, along with default values defined (see def
     tower_manage_rabbitmq_password: "password"
 
     # Tower Installer Version and Location
-    tower_manage_tower_release_version: 3.5.2-1
+    tower_manage_tower_release_version: 3.6.3-1
     tower_manage_tower_releases_url: https://releases.ansible.com/ansible-tower/setup-bundle/
     tower_manage_tower_setup_file: ansible-tower-setup-{{ tower_manage_tower_release_version }}.tar.gz
 
@@ -59,22 +54,44 @@ Available variables are listed below, along with default values defined (see def
     tower_manage_ldap_group_search: '[ "OU=Groups,OU=Administration,DC=example,DC=com", "SCOPE_SUBTREE", "(objectClass=group)" ]'
     tower_manage_ldap_group_type: MemberDNGroupType
     tower_manage_ldap_group_type_params: '{ "name_attr": "cn", "member_attr": "member" }'
-    tower_manage_ldap_require_group: CN=ROL_BUILD_Administrator,OU=example - Protected,OU=Role Groups,OU=Groups,OU=Administration,DC=example,DC=com
+    tower_manage_ldap_require_group: CN=ROL_BUILD_Administrator,OU=Ansible,OU=Groups,OU=Administration,DC=example,DC=com
     tower_manage_ldap_deny_group: null
-    tower_manage_ldap_user_flags_by_group: '{ "is_superuser": [ "CN=ROL_BUILD_Administrator,OU=example - Protected,OU=Role Groups,OU=Groups,OU=Administration,DC=example,DC=com" ] }'
+    tower_manage_ldap_user_flags_by_group: '{ "is_superuser": [ "CN=ROL_BUILD_Administrator,OU=Ansible,OU=Groups,OU=Administration,DC=example,DC=com" ] }'
     tower_manage_ldap_organization_map: "{}"
     tower_manage_ldap_team_map: "{}"
 ```
 
 Example Playbook
 ----------------
+Below is a playbook to seed Ansible Tower. It assumes Tower has already ben fully deployed.
+```yaml
+- name: Install Tower to VM
+  hosts: tower
+  vars_files:
+    - "../vars/seed.yml"  # A file containing tower_objects
+  tasks:
+    - include_role:
+        name: ansible-tower-manage
+        tasks_from: "{{ tower_tasks }}.yml"
+      loop:      # Include  specific task file
+        - tower_orgs
+        - tower_credential
+        - tower_project
+        - tower_inventories
+        - tower_inventory_source
+        - tower_job
+      loop_control:
+        loop_var: tower_tasks
+      vars:
+        tower_manage_server: "https://{{ inventory_hostname }}"
+```
 
 Role Variables
 --------------
 
 Available variables are listed below, along with default values (see defaults/main.yml):
 
-```
+```yaml
 # URL of the Tower API instance/host
 tower_manage_server: https://localhost
 tower_manage_fqdn: localhost
@@ -130,11 +147,11 @@ Example Playbook
 
 The following playbook and accompanying vars file containing the defined seed objects can be invoked in the following manner.
 
-```
+```sh
 $ ansible-playbook playbook.yml -e @tower_vars.yml tower
 ```
 
-```
+```yaml
 ---
 # Playbook to install Ansible Tower as a single node
 
@@ -155,7 +172,7 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
         loop_var: awx_tasks
 ```
 
-```
+```yaml
 ---
 # Playbook to install Ansible Tower as a cluster
 
@@ -178,7 +195,7 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
         loop_var: awx_tasks
 ```
 
-```
+```yaml
 ---
 # Playbook to seed Ansible Tower
 
@@ -296,7 +313,7 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
       loop_control:
         loop_var: awx_tasks
 ```
-```
+```yaml
 ---
 - name: Configure Tower LDAP
   hosts: localhost
@@ -313,9 +330,9 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
     tower_manage_ldap_group_search: '[ "OU=Groups,OU=Administration,DC=example,DC=com", "SCOPE_SUBTREE", "(objectClass=group)" ]'
     tower_manage_ldap_group_type: MemberDNGroupType
     tower_manage_ldap_group_type_params: '{ "name_attr": "cn", "member_attr": "member" }'
-    tower_manage_ldap_require_group: CN=ROL_BUILD_Administrator,OU=example - Protected,OU=Role Groups,OU=Groups,OU=Administration,DC=example,DC=com
+    tower_manage_ldap_require_group: CN=ROL_BUILD_Administrator,OU=ansible,OU=Groups,OU=Administration,DC=example,DC=com
     tower_manage_ldap_deny_group: null
-    tower_manage_ldap_user_flags_by_group: '{ "is_superuser": [ "CN=ROL_BUILD_Administrator,OU=example - Protected,OU=Role Groups,OU=Groups,OU=Administration,DC=example,DC=com" ] }'
+    tower_manage_ldap_user_flags_by_group: '{ "is_superuser": [ "CN=ROL_BUILD_Administrator,OU=ansible,OU=Groups,OU=Administration,DC=example,DC=com" ] }'
     tower_manage_ldap_organization_map: "{}"
     tower_manage_ldap_team_map: "{}"
 
