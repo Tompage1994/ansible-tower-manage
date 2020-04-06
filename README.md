@@ -61,31 +61,6 @@ Available variables are listed below, along with default values defined (see def
     tower_manage_ldap_team_map: "{}"
 ```
 
-Example Playbook
-----------------
-Below is a playbook to seed Ansible Tower. It assumes Tower has already ben fully deployed.
-```yaml
-- name: Install Tower to VM
-  hosts: tower
-  vars_files:
-    - "../vars/seed.yml"  # A file containing tower_objects
-  tasks:
-    - include_role:
-        name: ansible-tower-manage
-        tasks_from: "{{ tower_tasks }}.yml"
-      loop:      # Include  specific task file
-        - tower_orgs
-        - tower_credential
-        - tower_project
-        - tower_inventories
-        - tower_inventory_source
-        - tower_job
-      loop_control:
-        loop_var: tower_tasks
-      vars:
-        tower_manage_server: "https://{{ inventory_hostname }}"
-```
-
 Role Variables
 --------------
 
