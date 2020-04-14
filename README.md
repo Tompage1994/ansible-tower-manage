@@ -324,6 +324,18 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
         loop_var: awx_tasks
 ```
 
+Testing
+-------
+
+This role makes use of the [Molecule](https://molecule.readthedocs.io/) testing framework. At present only linting is implemented, but additional testing is planned to be implemented.
+
+In order to run the tests do the following:
+
+```sh
+pip install molecule>3
+molecule test
+```
+
 License
 -------
 
