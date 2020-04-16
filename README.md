@@ -44,6 +44,9 @@ Available variables are listed below, along with default values defined (see def
     tower_manage_tower_releases_url: https://releases.ansible.com/ansible-tower/setup-bundle/
     tower_manage_tower_setup_file: ansible-tower-setup-{{ tower_manage_tower_release_version }}.tar.gz
 
+    # Whether installer requires become (needed when clustered)
+    tower_manage_install_become: false
+
     # LDAP Configuration
     tower_manage_ldap_server_uri: ldap://<ad_server>
     tower_manage_ldap_bind_dn: <bind_dn>

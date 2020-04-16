@@ -36,6 +36,8 @@ tower_manage_tower_setup_file: ansible-tower-setup-{{ tower_manage_tower_release
 
 tower_manage_proj_branch: master
 
+tower_manage_install_become: false
+
 # Var to define whether to create a schedule. tower-dev is set to false so no schedule is created
 tower_manage_create_schedule: true
 
