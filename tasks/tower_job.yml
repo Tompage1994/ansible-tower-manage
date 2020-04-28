@@ -2,73 +2,43 @@
 
 # Create Job Temnplates
 - name: " Create Job Templates"
-  tower_job_template:
+  awx.awx.tower_job_template:
     name: "{{ item.1.name }}"
     job_type: "{{ item.1.job_type }}"
     playbook: "{{ item.1.playbook }}"
     project: "{{ item.1.project }}"
     inventory: "{{ item.1.inventory }}"
+    credentials: "{{ item.1.credentials }}"
     state: "{{ tower_manage_proj_state | default('present') }}"
     ask_credential: "{{ item.1.ask_credential | default(omit)  }}"
     ask_extra_vars: "{{ item.1.ask_extra_vars | default(omit)  }}"
-    extra_vars_path: "{{ item.1.extra_vars_path | default(omit)  }}"
+    extra_vars: "{{ item.1.extra_vars | default(omit)  }}"
     ask_tags: "{{ item.1.ask_tags | default(omit)  }}"
     ask_skip_tags: "{{ item.1.ask_skip_tags | default(omit)  }}"
     verbosity: "{{ item.1.verbosity | default(omit)  }}"
     become_enabled: "{{ item.1.become_enabled | default(omit)  }}"
-    credential: "{{ item.1.credential  }}"
     survey_enabled: "{{ item.1.survey_enabled | default(omit)  }}"
     survey_spec: "{{ item.1.survey_spec | default(omit)  }}"
+    custom_virtualenv: "{{ item.1.custom_virtualenv }}"
     tower_host: "{{ tower_manage_server }}"
     tower_username: "{{ tower_manage_admin_username }}"
     tower_password: "{{ tower_manage_admin_password }}"
     validate_certs: "{{ tower_manage_validate_certs }}"
   loop: "{{ tower_objects.organisations | subelements('job_templates', 'skip_missing=True') }}"
 
-- name: "add {{ item.1.custom_virtualenv }} custom-virtualenv to {{ item.1.name }} job_template"
-  command: >-
-            tower-cli job_template modify
-            --name '{{ item.1.name }}'
-            --custom-virtualenv '{{ item.1.custom_virtualenv }}'
-            --project '{{ item.1.project }}'
-            --playbook '{{ item.1.playbook }}'
-            --tower-host {{ tower_manage_server }}
-            --tower-username {{ tower_manage_admin_username }}
-            --tower-password {{ tower_manage_admin_password }} --insecure
-  loop: "{{ tower_objects.organisations | subelements('job_templates', 'skip_missing=True') }}"
-  register: job_template_mod
-  when: item.1.custom_virtualenv is defined
-  changed_when: job_template_mod.stdout_lines.0 == "Resource changed."
-
-- name: "modify schedule to {{ item.1.name }} job_template"
-  command: >-
-            tower-cli schedule modify
-            --name '{{ item.1.schedule.name }}'
-            --job-template '{{ item.1.name }}'
-            --rrule "DTSTART:{{ item.1.schedule.startdatetime | default(ansible_date_time.iso8601_basic_short) }}Z
-                     RRULE:FREQ={{ item.1.schedule.frequency | upper }};INTERVAL={{ item.1.schedule.interval | default('1') }}"
-            --tower-host {{ tower_manage_server }}
-            --tower-username {{ tower_manage_admin_username }}
-            --tower-password {{ tower_manage_admin_password }} --insecure
-  loop: "{{ tower_objects.organisations | subelements('job_templates', 'skip_missing=True') }}"
-  register: job_template_schedule
-  when: item.1.schedule is defined
-  ignore_errors: true
-  changed_when: job_template_schedule.stdout_lines.0 == "Resource changed."
-
 - name: "add new schedule to {{ item.1.name }} job_template"
   command: >-
-            tower-cli schedule create
+            awx schedules create
             --name '{{ item.1.schedule.name }}'
-            --job-template '{{ item.1.name }}'
+            --unified-job-template '{{ item.1.name }}'
             --rrule "DTSTART:{{ item.1.schedule.startdatetime | default(ansible_date_time.iso8601_basic_short) }}Z
                      RRULE:FREQ={{ item.1.schedule.frequency | upper }};INTERVAL={{ item.1.schedule.interval | default('1') }}"
-            --tower-host {{ tower_manage_server }}
-            --tower-username {{ tower_manage_admin_username }}
-            --tower-password {{ tower_manage_admin_password }} --insecure
+            --conf.host {{ tower_manage_server }}
+            --conf.username {{ tower_manage_admin_username }}
+            --conf.password {{ tower_manage_admin_password }}
+            {{ tower_manage_validate_certs | ternary('','--insecure') }}
   loop: "{{ tower_objects.organisations | subelements('job_templates', 'skip_missing=True') }}"
   register: job_template_schedule_new
   when: (item.1.schedule is defined) and tower_manage_create_schedule
-  ignore_errors: true
-  changed_when: job_template_schedule_new.stdout_lines.0 == "Resource changed."
+  changed_when: false
 ...

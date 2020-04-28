@@ -2,10 +2,10 @@
 
 # Create Orgs
 - name: " Create Organisations"
-  tower_organization:
+  awx.awx.tower_organization:
     name: "{{ item.name }}"
     description: "{{ item.description }}"
-    state: present
+    state: "{{ tower_manage_proj_state | default('present') }}"
     tower_host: "{{ tower_manage_server }}"
     tower_username: "{{ tower_manage_admin_username }}"
     tower_password: "{{ tower_manage_admin_password }}"

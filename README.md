@@ -1,14 +1,14 @@
 ansible-tower-manage
 =========
 
-Ansible role to install and manage the configuration of Ansible Tower. It includes the ability to add configuration objects such as projects, job tempaltes, credentials, inventories and many more.
+Ansible role to install and manage the configuration of Ansible Tower. It includes the ability to add configuration objects such as projects, job templates, credentials, inventories and many more.
 
 Requirements
 ------------
 
 Users can seed Tower objects by passing a variable `tower_objects` that contains a dictionary of objects. This readme contains an example set of high level objects that can be used as a guide. Each object has a distinct set of variables that it can consume, based upon the appropriate Ansible module employed. For example, the `organisation` object can take `name` and `description` as valid variables. Most objects has been documented within the example `tower_objects`, use it as a guide for your seeding activities.
 
-The role heavily utilises the existing `tower_*` Ansible modules, which in turn leverage the `tower-cli`.
+The role heavily utilises the existing AWX collection, which in turn leverage the `AWX CLI`.
 
 The role can install all pre-requisites on the target (eg `python-virtualenv` and `python-setuptools`) as well as install tower-cli inside a venv in order to complete the above tasks, but it does require access to the appropriate RHEL/CentOS channels and access to PyPi.
 
@@ -89,7 +89,7 @@ tower_objects:
           scm_type: git
           scm_credential: github
           custom_virtualenv: "{{ tower_manage_tower_default_virtualenv_path }}/mon"
-      inventories:
+      inventory:
         - name: AWS
           description: AWS Test
       inventory_source:
@@ -215,13 +215,13 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
               injectors: "{{ lookup('file', '{{ var_location }}/infoblox_extra_vars.json') }}"
           credential:
             - name: "Infoblox Prod"
-              kind: infoblox
+              credential_type: infoblox
               inputs:
                 host: ipam.example.com
                 username: user
                 password: password
             - name: "Ansible vCenter"
-              kind: vmware
+              credential_type: vmware
               host: ukthvmvcal01.example.com
               username: user
               password: password
@@ -232,7 +232,7 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
               scm_type: git
               scm_update_on_launch: yes
               custom_virtualenv: "{{ tower_manage_tower_default_virtualenv_path }}/demo"
-          inventories:
+          inventory:
             - name: working
               description: working demo Test
           inventory_source:
@@ -283,7 +283,7 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
       loop:      # Include  specific task file
         - tower_create_venv
         - tower_orgs
-        - tower_inventories
+        - tower_inventory
         - tower_projects
         - tower_job
         - tower_job_credential

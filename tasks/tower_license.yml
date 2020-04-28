@@ -1,16 +1,12 @@
 ---
 
 # Apply the Tower License
-- name: "[Tower] Upload Tower License File"
-  uri:
-    url: "{{ tower_manage_server }}/api/v2/config/"
-    validate_certs: false
-    method: POST
-    force_basic_auth: true
-    user: "{{ tower_manage_admin_username }}"
-    password: "{{ tower_manage_admin_password }}"
-    body: "{{ tower_manage_licence }}"
-    body_format: json
-    headers:
-      Content-Type: "application/json"
+- name: Set the license using a file
+  awx.awx.tower_license:
+    data: "{{ tower_manage_licence }}"
+    eula_accepted: true
+    tower_username: "{{ tower_manage_admin_username }}"
+    tower_password: "{{ tower_manage_admin_password }}"
+    tower_host: "{{ tower_manage_server }}"
+    validate_certs: "{{ tower_manage_validate_certs }}"
 ...
