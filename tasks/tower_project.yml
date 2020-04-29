@@ -1,7 +1,7 @@
 ---
 
 # Create Projects
-- name: "Add Tower Project with cache timeout and custom virtualenv  "
+- name: "Add Tower Project"
   awx.awx.tower_project:
     name: "{{ item.1.name }}"
     description: "{{ item.1.description | default(omit) }}"
@@ -20,4 +20,14 @@
     validate_certs: "{{ tower_manage_validate_certs }}"
   loop: "{{ tower_objects.organisations | subelements('projects' , 'skip_missing=True')  }}"
 
+- name: "Update Project"
+  command: >-
+            awx projects update --wait
+            --conf.host "{{ tower_manage_server }}"
+            --conf.username "{{ tower_manage_admin_username }}"
+            --conf.password "{{ tower_manage_admin_password }}"
+            {{ tower_manage_validate_certs | ternary('', '--conf.insecure') }}
+            "{{ item.1.name }}"
+  loop: "{{ tower_objects.organisations | subelements('credential_input_source', 'skip_missing=True') }}"
+  changed_when: false
 ...
