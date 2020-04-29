@@ -1,12 +1,19 @@
 ---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: collections/requirements.yml
+
 lint: |
   set -e
   yamllint -c molecule/yaml-lint.yml .
-  ansible-lint .
+  # Disabling ansible-lint because does not support collections at present
+  # ansible-lint .
 platforms:
   - name: instance
 
 scenario:
   name: default
   test_sequence:
+    - dependency
     - lint

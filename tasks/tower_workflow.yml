@@ -1,7 +1,10 @@
 ---
 - name: Show deprecated warning
   debug:
-    msg: The awx.awx.tower_workflow_template has been deprecated in favor of tower_workflow_job_template and tower_workflow_job_template_node. Please keep this in mind.
+    msg: >-
+           The awx.awx.tower_workflow_template has been deprecated
+           in favor of tower_workflow_job_template and
+           tower_workflow_job_template_node. Please keep this in mind.
 
 # Create Workflow Temnplates
 - name: " Create Workflow Templates"
