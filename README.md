@@ -212,7 +212,7 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
                 required:
                   - username
                   - password
-              injectors: "{{ lookup('file', '{{ var_location }}/infoblox_extra_vars.json') }}"
+              injectors: "{{ lookup('file', '{{ var_location }}/infoblox_extra_vars.json') }}" #  See below for how this should look
           credential:
             - name: "Infoblox Prod"
               credential_type: infoblox
@@ -326,6 +326,43 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
       loop_control:
         loop_var: tower_tasks
 ```
+
+### Credential Type Injectors
+
+We may want to create a credential type such as in the example below:
+
+```yaml
+credential_type:
+  - name: infoblox
+    inputs:
+      fields:
+        - id: username
+          type: string
+          label: Username
+        - id: host
+          type: string
+          label: Hostname
+        - id: password
+          type: string
+          label: Password
+          secret: true
+      required:
+        - username
+        - password
+    injectors: "{{ lookup('file', '{{ var_location }}/infoblox_extra_vars.json') }}"
+```
+The Injectors file will be a file with the mapping from the input field to a variable within Ansible. In the example below each of the fields gets set to the variable `infoblox_<FIELD>`
+
+```json
+{
+  "extra_vars": {
+      "infoblox_host": "{% raw %}{{ host }}{% endraw %}",
+      "infoblox_password": "{% raw %}{{ password }}{% endraw %}",
+      "infoblox_username": "{% raw %}{{ username }}{% endraw %}"
+  }
+}
+```
+
 
 Testing
 -------
