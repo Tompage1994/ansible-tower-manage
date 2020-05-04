@@ -3,7 +3,7 @@
 # Apply the Tower License
 - name: Set the license using a file
   awx.awx.tower_license:
-    data: "{{ tower_manage_licence }}"
+    data: "{{ tower_manage_license }}"
     eula_accepted: true
     tower_username: "{{ tower_manage_admin_username }}"
     tower_password: "{{ tower_manage_admin_password }}"

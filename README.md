@@ -12,9 +12,9 @@ The role heavily utilises the existing AWX collection, which in turn leverage th
 
 The role can install all pre-requisites on the target (eg `python-virtualenv` and `python-setuptools`) as well as install tower-cli inside a venv in order to complete the above tasks, but it does require access to the appropriate RHEL/CentOS channels and access to PyPi.
 
-A valid `license.json` file needs to be supplied using variable `tower_manage_licence` so that it can be uploaded to Tower once installed.
+A valid `license.json` file needs to be supplied using variable `tower_manage_license` so that it can be uploaded to Tower once installed.
 ```yaml
-tower_manage_licence: "{{ lookup('file','license.json') }}"
+tower_manage_license: "{{ lookup('file','license.json') }}"
 ```
 
 There are no other strict Role dependencies.
