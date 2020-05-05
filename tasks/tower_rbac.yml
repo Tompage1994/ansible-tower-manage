@@ -10,7 +10,7 @@
     workflow: "{{ item.1.workflow | default(omit) }}"
     credential: "{{ item.1.credential | default(omit) }}"
     project: "{{ item.1.project | default(omit) }}"
-    role: "{{ item.1.role | default(omit) }}"
+    role: "{{ item.1.role }}"
     state: "{{ tower_manage_proj_state | default('present') }}"
     tower_host: "{{ tower_manage_server }}"
     tower_username: "{{ tower_manage_admin_username }}"
