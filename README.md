@@ -223,9 +223,10 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
                 password: password
             - name: "Ansible vCenter"
               credential_type: vmware
-              host: ukthvmvcal01.example.com
-              username: user
-              password: password
+              inputs:
+                host: ukthvmvcal01.example.com
+                username: user
+                password: password
           projects:
             - name: working
               description: "Ansible Playground Manager"
