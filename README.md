@@ -105,7 +105,8 @@ tower_objects:
           playbook: "playbooks/ping.yml"
           project: "Prefect"
           inventory: "AWS"
-          credential: "Local"
+          credentials: 
+            - "Local"
           survey_enabled: yes
           survey_spec: "{{ lookup('file', 'ping_survey.json') }}"
           ask_credential: yes
@@ -238,7 +239,7 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
           inventory_source:
             - name: working demo sources
               description: working demo sources
-              credential:
+              credentials:
               source:
               source_project:
               instance_filters:
@@ -248,7 +249,10 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
               playbook: "hello_world.yml"
               project: working
               inventory: "working"
-              credential: "Local"    # That must be created before use or use already created credential
+              credentials: 
+                - "Local"    # That must be created before use or use already created credential
+                - "cred1"
+                - "cred2"
               survey_enabled: yes
               survey_spec: "{{ lookup('file', 'tower_setup_survey.json') }}"
               verbosity: 2
@@ -257,17 +261,13 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
               playbook: "playbooks/regular.yml"
               project: "working"
               inventory: "working"
-              credential: "Local"
+              credentials: 
+                - "Local"
               schedule:
                 name: "regular scheduled job"
                 startdatetime: 20200101T010000 # defaults to now
                 frequency: 'daily' # {hourly, daily, weekly, monthly}
                 interval: 1 # Defaults to 1
-          job_template_credential:
-            - job_template: "demo"
-              credential: "cred1"
-            - job_template: "demo"
-              credential: "cred2"
           workflow_templates:
             - name: demo Template
               description: My very first Workflow Template
@@ -286,7 +286,6 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
         - tower_inventory
         - tower_projects
         - tower_job
-        - tower_job_credential
         - tower_workflow
       loop_control:
         loop_var: tower_tasks
