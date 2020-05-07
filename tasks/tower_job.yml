@@ -19,7 +19,7 @@
     become_enabled: "{{ item.1.become_enabled | default(omit)  }}"
     survey_enabled: "{{ item.1.survey_enabled | default(omit)  }}"
     survey_spec: "{{ item.1.survey_spec | default(omit)  }}"
-    custom_virtualenv: "{{ item.1.custom_virtualenv }}"
+    custom_virtualenv: "{{ item.1.custom_virtualenv | default(omit) }}"
     tower_host: "{{ tower_manage_server }}"
     tower_username: "{{ tower_manage_admin_username }}"
     tower_password: "{{ tower_manage_admin_password }}"
