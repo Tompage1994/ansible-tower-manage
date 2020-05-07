@@ -8,7 +8,7 @@
     playbook: "{{ item.1.playbook }}"
     project: "{{ item.1.project }}"
     inventory: "{{ item.1.inventory }}"
-    credentials: "{{ item.1.credentials }}"
+    credentials: "{{ item.1.credentials | default([item.1.credentail]) }}"
     state: "{{ tower_manage_proj_state | default('present') }}"
     ask_credential: "{{ item.1.ask_credential | default(omit)  }}"
     ask_extra_vars: "{{ item.1.ask_extra_vars | default(omit)  }}"
