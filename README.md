@@ -284,8 +284,11 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
       loop:      # Include  specific task file
         - tower_create_venv
         - tower_orgs
+        - tower_credential_type
+        - tower_credential
         - tower_inventory
-        - tower_projects
+        - tower_inventory_source
+        - tower_project
         - tower_job
         - tower_workflow
       loop_control:
