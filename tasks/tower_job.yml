@@ -28,16 +28,24 @@
   loop: "{{ tower_objects.organisations | subelements('job_templates', 'skip_missing=True') }}"
 
 - name: "add new schedule to {{ item.1.name }} job_template"
-  command: >-
-            awx schedules create
-            --name '{{ item.1.schedule.name }}'
-            --unified-job-template '{{ item.1.name }}'
-            --rrule "DTSTART:{{ item.1.schedule.startdatetime | default(ansible_date_time.iso8601_basic_short) }}Z
-                     RRULE:FREQ={{ item.1.schedule.frequency | upper }};INTERVAL={{ item.1.schedule.interval | default('1') }}"
+  shell: >-
+            JOB_TEMPLATE_ID=$(awx job_templates get '{{ item.1.name }}'
+            -f human
+            --filter 'id'
             --conf.host {{ tower_manage_server }}
             --conf.username {{ tower_manage_admin_username }}
             --conf.password {{ tower_manage_admin_password }}
-            {{ tower_manage_validate_certs | ternary('','--insecure') }}
+            {{ tower_manage_validate_certs | ternary('', '--conf.insecure') }} | tail -1)
+            &&
+            awx schedules create
+            --name '{{ item.1.schedule.name }}'
+            --unified_job_template $JOB_TEMPLATE_ID
+            --rrule "DTSTART:{{ item.1.schedule.startdatetime | default(ansible_date_time.iso8601_basic_short) }}Z
+            RRULE:FREQ={{ item.1.schedule.frequency | upper }};INTERVAL={{ item.1.schedule.interval | default('1') }}"
+            --conf.host {{ tower_manage_server }}
+            --conf.username {{ tower_manage_admin_username }}
+            --conf.password {{ tower_manage_admin_password }}
+            {{ tower_manage_validate_certs | ternary('', '--conf.insecure') }}
   loop: "{{ tower_objects.organisations | subelements('job_templates', 'skip_missing=True') }}"
   register: job_template_schedule_new
   when: (item.1.schedule is defined) and tower_manage_create_schedule
