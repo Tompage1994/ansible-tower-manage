@@ -4,10 +4,11 @@
 - name: " Create Job Templates"
   awx.awx.tower_job_template:
     name: "{{ item.1.name }}"
-    job_type: "{{ item.1.job_type }}"
+    job_type: "{{ item.1.job_type | default('run') }}"
     playbook: "{{ item.1.playbook }}"
     project: "{{ item.1.project }}"
     inventory: "{{ item.1.inventory }}"
+    limit: "{{ item.1.limit | default(omit) }}"
     credentials: "{{ item.1.credentials | default([item.1.credential]) }}"
     state: "{{ tower_manage_proj_state | default('present') }}"
     ask_credential: "{{ item.1.ask_credential | default(omit)  }}"
