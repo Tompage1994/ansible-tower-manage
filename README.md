@@ -262,13 +262,14 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
               playbook: "playbooks/regular.yml"
               project: "working"
               inventory: "working"
-              credentials: 
+              credentials:
                 - "Local"
-              schedule:
-                name: "regular scheduled job"
-                startdatetime: 20200101T010000 # defaults to now
-                frequency: 'daily' # {hourly, daily, weekly, monthly}
-                interval: 1 # Defaults to 1
+          job_schedules:
+            - job_template: "Regular Job"
+              startdatetime: 20200101T010000 # defaults to now
+              extra_data: "{{ lookup('file', 'schedule_extra_vars.json') }}"
+              frequency: 'daily' # {hourly, daily, weekly, monthly}
+              interval: 1 # Defaults to 1
           workflow_templates:
             - name: demo Template
               description: My very first Workflow Template
@@ -290,6 +291,7 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
         - tower_inventory_source
         - tower_project
         - tower_job
+        - tower_job_schedule
         - tower_workflow
       loop_control:
         loop_var: tower_tasks
