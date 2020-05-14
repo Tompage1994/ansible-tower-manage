@@ -19,6 +19,7 @@
             --rrule "DTSTART:{{ item.1.startdatetime | default(ansible_date_time.iso8601_basic_short) }}Z
             RRULE:FREQ={{ item.1.frequency | upper }};INTERVAL={{ item.1.interval | default('1') }}"
             --extra_data '{{ item.1.extra_data | default(omit) }}'
+            --enabled {{ item.1.enabled }}
             --conf.host {{ tower_manage_server }}
             --conf.username {{ tower_manage_admin_username }}
             --conf.password {{ tower_manage_admin_password }}
@@ -44,6 +45,7 @@
             --rrule "DTSTART:{{ item.1.startdatetime | default(ansible_date_time.iso8601_basic_short) }}Z
             RRULE:FREQ={{ item.1.frequency | upper }};INTERVAL={{ item.1.interval | default('1') }}"
             --extra_data '{{ item.1.extra_data | default(omit) }}'
+            --enabled {{ item.1.enabled }}
             '{{ item.1.name | default(item.1.job_template + " schedule") }}'
             --conf.host {{ tower_manage_server }}
             --conf.username {{ tower_manage_admin_username }}
