@@ -54,5 +54,5 @@
   loop: "{{ tower_objects.organisations | subelements('job_schedules', 'skip_missing=True') }}"
   when: tower_manage_create_schedule
   changed_when: false
-  ignore_errors
+  ignore_errors: true
 ...
