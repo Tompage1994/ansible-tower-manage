@@ -3,6 +3,8 @@ ansible-tower-manage
 
 Ansible role to install and manage the configuration of Ansible Tower. It includes the ability to add configuration objects such as projects, job tempaltes, credentials, inventories and many more.
 
+Please note this repository is still in development but being transitioned to usign the AWX collection (`awx.awx`) under the `awx` branch.
+
 Requirements
 ------------
 
