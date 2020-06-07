@@ -1,7 +1,7 @@
 ---
 # Create a team
 - name: " Create a team"
-  tower_team:
+  awx.awx.tower_team:
     name: "{{ item.1.name }}"
     description: "{{ item.1.description | default(omit) }}"
     organization: "{{ item.0.name }}"

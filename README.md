@@ -1,7 +1,7 @@
 ansible-tower-manage
 =========
 
-Ansible role to install and manage the configuration of Ansible Tower. It includes the ability to add configuration objects such as projects, job tempaltes, credentials, inventories and many more.
+Ansible role to install and manage the configuration of Ansible Tower. It includes the ability to add configuration objects such as projects, job templates, credentials, inventories and many more.
 
 Please note this repository is still in development but being transitioned to usign the AWX collection (`awx.awx`) under the `awx` branch.
 
@@ -10,13 +10,13 @@ Requirements
 
 Users can seed Tower objects by passing a variable `tower_objects` that contains a dictionary of objects. This readme contains an example set of high level objects that can be used as a guide. Each object has a distinct set of variables that it can consume, based upon the appropriate Ansible module employed. For example, the `organisation` object can take `name` and `description` as valid variables. Most objects has been documented within the example `tower_objects`, use it as a guide for your seeding activities.
 
-The role heavily utilises the existing `tower_*` Ansible modules, which in turn leverage the `tower-cli`.
+The role heavily utilises the existing AWX collection, which in turn leverage the `AWX CLI`.
 
 The role can install all pre-requisites on the target (eg `python-virtualenv` and `python-setuptools`) as well as install tower-cli inside a venv in order to complete the above tasks, but it does require access to the appropriate RHEL/CentOS channels and access to PyPi.
 
-A valid `license.json` file needs to be supplied using variable `tower_manage_licence` so that it can be uploaded to Tower once installed.
+A valid `license.json` file needs to be supplied using variable `tower_manage_license` so that it can be uploaded to Tower once installed.
 ```yaml
-tower_manage_licence: "{{ lookup('file','license.json') }}"
+tower_manage_license: "{{ lookup('file','license.json') }}"
 ```
 
 There are no other strict Role dependencies.
@@ -91,7 +91,7 @@ tower_objects:
           scm_type: git
           scm_credential: github
           custom_virtualenv: "{{ tower_manage_tower_default_virtualenv_path }}/mon"
-      inventories:
+      inventory:
         - name: AWS
           description: AWS Test
       inventory_source:
@@ -107,7 +107,8 @@ tower_objects:
           playbook: "playbooks/ping.yml"
           project: "Prefect"
           inventory: "AWS"
-          credential: "Local"
+          credentials: 
+            - "Local"
           survey_enabled: yes
           survey_spec: "{{ lookup('file', 'ping_survey.json') }}"
           ask_credential: yes
@@ -214,19 +215,20 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
                 required:
                   - username
                   - password
-              injectors: "{{ lookup('file', '{{ var_location }}/infoblox_extra_vars.json') }}"
+              injectors: "{{ lookup('file', '{{ var_location }}/infoblox_extra_vars.json') }}" #  See below for how this should look
           credential:
             - name: "Infoblox Prod"
-              kind: infoblox
+              credential_type: infoblox
               inputs:
                 host: ipam.example.com
                 username: user
                 password: password
             - name: "Ansible vCenter"
-              kind: vmware
-              host: ukthvmvcal01.example.com
-              username: user
-              password: password
+              credential_type: vmware
+              inputs:
+                host: ukthvmvcal01.example.com
+                username: user
+                password: password
           projects:
             - name: working
               description: "Ansible Playground Manager"
@@ -234,13 +236,13 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
               scm_type: git
               scm_update_on_launch: yes
               custom_virtualenv: "{{ tower_manage_tower_default_virtualenv_path }}/demo"
-          inventories:
+          inventory:
             - name: working
               description: working demo Test
           inventory_source:
             - name: working demo sources
               description: working demo sources
-              credential:
+              credentials:
               source:
               source_project:
               instance_filters:
@@ -250,7 +252,10 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
               playbook: "hello_world.yml"
               project: working
               inventory: "working"
-              credential: "Local"    # That must be created before use or use already created credential
+              credentials: 
+                - "Local"    # That must be created before use or use already created credential
+                - "cred1"
+                - "cred2"
               survey_enabled: yes
               survey_spec: "{{ lookup('file', 'tower_setup_survey.json') }}"
               verbosity: 2
@@ -259,17 +264,14 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
               playbook: "playbooks/regular.yml"
               project: "working"
               inventory: "working"
-              credential: "Local"
-              schedule:
-                name: "regular scheduled job"
-                startdatetime: 20200101T010000 # defaults to now
-                frequency: 'daily' # {hourly, daily, weekly, monthly}
-                interval: 1 # Defaults to 1
-          job_template_credential:
-            - job_template: "demo"
-              credential: "cred1"
-            - job_template: "demo"
-              credential: "cred2"
+              credentials:
+                - "Local"
+          job_schedules:
+            - job_template: "Regular Job"
+              startdatetime: 20200101T010000 # defaults to now
+              extra_data: "{{ lookup('file', 'schedule_extra_vars.json') }}"
+              frequency: 'daily' # {hourly, daily, weekly, monthly}
+              interval: 1 # Defaults to 1
           workflow_templates:
             - name: demo Template
               description: My very first Workflow Template
@@ -285,10 +287,13 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
       loop:      # Include  specific task file
         - tower_create_venv
         - tower_orgs
-        - tower_inventories
-        - tower_projects
+        - tower_credential_type
+        - tower_credential
+        - tower_inventory
+        - tower_inventory_source
+        - tower_project
         - tower_job
-        - tower_job_credential
+        - tower_job_schedule
         - tower_workflow
       loop_control:
         loop_var: tower_tasks
@@ -328,6 +333,43 @@ $ ansible-playbook playbook.yml -e @tower_vars.yml tower
       loop_control:
         loop_var: tower_tasks
 ```
+
+### Credential Type Injectors
+
+We may want to create a credential type such as in the example below:
+
+```yaml
+credential_type:
+  - name: infoblox
+    inputs:
+      fields:
+        - id: username
+          type: string
+          label: Username
+        - id: host
+          type: string
+          label: Hostname
+        - id: password
+          type: string
+          label: Password
+          secret: true
+      required:
+        - username
+        - password
+    injectors: "{{ lookup('file', '{{ var_location }}/infoblox_extra_vars.json') }}"
+```
+The Injectors file will be a file with the mapping from the input field to a variable within Ansible. In the example below each of the fields gets set to the variable `infoblox_<FIELD>`
+
+```json
+{
+  "extra_vars": {
+      "infoblox_host": "{% raw %}{{ host }}{% endraw %}",
+      "infoblox_password": "{% raw %}{{ password }}{% endraw %}",
+      "infoblox_username": "{% raw %}{{ username }}{% endraw %}"
+  }
+}
+```
+
 
 Testing
 -------

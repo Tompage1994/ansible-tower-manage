@@ -2,7 +2,7 @@
 
 # Create Inventoy Source
 - name: Add tower inventory source
-  tower_inventory_source:
+  awx.awx.tower_inventory_source:
     name: "{{ item.1.name }}"
     description: "{{ item.1.description | default(omit) }}"
     inventory: "{{ item.1.inventory }}"

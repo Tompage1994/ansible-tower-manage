@@ -1,8 +1,14 @@
 ---
+- name: Show deprecated warning
+  debug:
+    msg: >-
+           The awx.awx.tower_workflow_template has been deprecated
+           in favor of tower_workflow_job_template and
+           tower_workflow_job_template_node. Please keep this in mind.
 
-# Create Job Temnplates
+# Create Workflow Temnplates
 - name: " Create Workflow Templates"
-  tower_workflow_template:
+  awx.awx.tower_workflow_template:
     name: "{{ item.1.name }}"
     description: "{{ item.1.description }}"
     organization: "{{ item.0.name }}"
@@ -12,7 +18,7 @@
     extra_vars: "{{ item.1.extra_vars | default(omit)  }}"
     ask_extra_vars: "{{ item.1.ask_extra_vars | default(omit)  }}"
     ask_inventory: "{{ item.1.ask_inventory | default(omit)  }}"
-    allow_simultaneous:
+    allow_simultaneous: "{{ item.1.allow_simultaneous | default(omit) }}"
     state: "{{ tower_manage_proj_state | default('present') }}"
     tower_host: "{{ tower_manage_server }}"
     tower_username: "{{ tower_manage_admin_username }}"

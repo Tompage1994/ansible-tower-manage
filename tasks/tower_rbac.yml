@@ -2,10 +2,15 @@
 
 # Create RBAC for a team
 - name: " Create RBAC entry"
-  tower_role:
+  awx.awx.tower_role:
     team: "{{ item.1.team }}"
-    job_template: "{{ item.1.job_template }}"
-    role: "{{ item.1.role }}"   # Can be one of 'admin', 'read', 'execute'
+    job_template: "{{ item.1.job_template | default(omit) }}"
+    organization: "{{ item.1.organization | default(omit) }}"
+    inventory: "{{ item.1.inventory | default(omit) }}"
+    workflow: "{{ item.1.workflow | default(omit) }}"
+    credential: "{{ item.1.credential | default(omit) }}"
+    project: "{{ item.1.project | default(omit) }}"
+    role: "{{ item.1.role }}"
     state: "{{ tower_manage_proj_state | default('present') }}"
     tower_host: "{{ tower_manage_server }}"
     tower_username: "{{ tower_manage_admin_username }}"
