@@ -1,0 +1,47 @@
+- name: create the certs dir
+  file:
+    path: "/var/lib/awx/certs/"
+    state: directory
+    mode: 0775
+    owner: awx
+    group: awx
+
+- name: copy the ca certs from virtualenv
+  copy:
+    src: "/var/lib/awx/venv/awx/lib/python3.6/site-packages/certifi/cacert.pem"
+    dest: "/var/lib/awx/certs/"
+    owner: awx
+    group: awx
+    remote_src: True
+    force: no
+
+- name: insert the root_ca
+  blockinfile:
+    path: /var/lib/awx/certs/cacert.pem
+    marker: "# {mark} Custom Root CA"
+    state: present
+    block: "{{ tower_manage_custom_ca_root }}"
+  notify: restart tower
+
+- name: update supervisord
+  ini_file:
+    path: /etc/supervisord.conf
+    section: supervisord
+    option: environment
+    value: 'REQUESTS_CA_BUNDLE=/var/lib/awx/certs/cacert.pem'
+    no_extra_spaces: True
+  notify: restart tower
+
+# Note this overwrites AWX_PROOT_SHOW_PATHS, rather than merges
+# Currently no way to lookup current settings without calling the api
+# https://github.com/ansible/awx/issues/7277
+- name: make the new cacerts available via bubblewrap
+  awx.awx.tower_settings:
+    settings:
+      AWX_PROOT_SHOW_PATHS:
+        - /var/lib/awx/certs/
+    tower_username: "{{ tower_manage_admin_username }}"
+    tower_password: "{{ tower_manage_admin_password }}"
+    tower_host: "{{ tower_manage_server }}"
+    validate_certs: "{{ tower_manage_validate_certs }}"
+  run_once: true
