@@ -45,4 +45,5 @@
     headers:
       Content-Type: "application/json"
   when: created_VirtualEnv is succeeded
+  run_once: true
 ...
