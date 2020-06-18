@@ -69,4 +69,11 @@ tower_manage_tower_custom_virtualenv_path_per_team_jobs: []
 
 tower_objects: []
 
+# custom ca root
+# tower_manage_custom_ca_root: |
+#     -----BEGIN CERTIFICATE-----
+#     MIIDlDCCAnygAwIBAgIBATANBgkqhkiG9w0BAQsFADA5MRcwFQYDVQQKDA5MQUIu
+#     ...
+#     tOdArwfKnd0=
+#     -----END CERTIFICATE-----
 ...

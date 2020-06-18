@@ -3,3 +3,6 @@
   service:
     name: nginx
     state: restarted
+
+- name: restart tower
+  command: 'ansible-tower-service restart'

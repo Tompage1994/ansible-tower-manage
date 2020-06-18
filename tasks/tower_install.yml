@@ -12,6 +12,7 @@
     name: "{{ tower_manage_base_packages }}"
     state: present
   when: ansible_facts['distribution'] == "CentOS"
+  become: true
 
 # Same, but on RHEL RHSCL is enabled by Tower, so disable
 - name: "Install Base Packages for Tower CLI"
@@ -21,6 +22,7 @@
     disablerepo: "{{ item }}"
   loop: "{{ tower_manage_disablerepo }}"
   when: ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version']|int >= 7
+  become: true
 
 # Download and Extract
 - name: "[Tower] Download and Extract Tower"

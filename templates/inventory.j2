@@ -10,7 +10,7 @@
 admin_password='{{ tower_manage_admin_password }}'
 
 # Define Remote PostgreSQL for Tower
-pg_host='{{ tower_database }}'
+pg_host='{{ tower_database.split()[0] }}'
 pg_port='{{ tower_database_port }}'
 
 pg_database='awx'
