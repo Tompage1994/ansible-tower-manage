@@ -1,6 +1,9 @@
 ansible-tower-manage
 =========
 
+**PLEASE NOTE: This repository is now deprecated in favour of the [redhat_cop.tower_configuration collection](https://github.com/redhat-cop/tower_configuration.git)**
+
+
 Ansible role to install and manage the configuration of Ansible Tower. It includes the ability to add configuration objects such as projects, job tempaltes, credentials, inventories and many more.
 
 Please note this repository is still in development but being transitioned to usign the AWX collection (`awx.awx`) under the `awx` branch.
